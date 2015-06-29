@@ -2,14 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.tudarmstadt.langtech</groupId>
   <artifactId>scala-utilities</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1</version>
   <name>${project.artifactId}</name>
-  <description>My wonderfull scala app</description>
-  <inceptionYear>2010</inceptionYear>
+  <description>A collection of some useful scala utility functions</description>
+  <inceptionYear>2014</inceptionYear>
   <licenses>
     <license>
-      <name>My License</name>
-      <url>http://....</url>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
