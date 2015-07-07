@@ -2,7 +2,6 @@ package de.tudarmstadt.langtech.scala_utilities.formatting
 
 import java.io.PrintStream
 import java.io.ByteArrayOutputStream
-import de.tudarmstadt.langtech.scala_utilities.io
 
 case class ARFFFeature(val value: Any, val domain: Seq[String]){
     override def toString = value.toString
