@@ -24,7 +24,8 @@ class YamlSettings(val settingsFile: String) {
   def path(keys: String*): String = {
     val pathString = read[String](keys :_*)
     if(!new java.io.File(pathString).exists()){
-      throw new FileNotFoundException("Could not access " + pathString + " specified in " + settingsFile)
+      //throw new FileNotFoundException("Could not access " + pathString + " specified in " + settingsFile)
+      System.err.println("WARNING: Path " + pathString + " specified in " + settingsFile + " but no file was found.")
     }
     pathString
   }
