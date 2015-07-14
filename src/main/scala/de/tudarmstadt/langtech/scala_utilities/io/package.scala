@@ -1,5 +1,6 @@
 package de.tudarmstadt.langtech.scala_utilities
 import java.io.File
+import java.nio.file.Paths
 import scala.collection.mutable.ListBuffer
 
 
@@ -14,12 +15,19 @@ package object io {
       scala.io.Source.fromFile(path, FileEncoding).getLines.mkString("\n")
 
     def write(file: String, data: String) {
+      folderPart(file).foreach(parent => new File(parent).mkdirs)
       val stream = new java.io.OutputStreamWriter(new java.io.FileOutputStream(file), FileEncoding)
       stream.write(data)
       stream.close
     }
 
     def exists(file: String): Boolean = new File(file).exists
+    
+    /** Returns only the filename part of a given path */
+    def filenamePart(path: String): String = Paths.get(path).getFileName.toString
+    
+    /** Returns only the filename part of a given path */
+    def folderPart(path: String): Option[String] = Option(Paths.get(path).getParent.toString)
 
     /** More or less a hack. Take raw bytes and try to encode them in default encoding (=UTF-8) */
     def reencode(string: String): String = new String(string.getBytes, FileEncoding)
