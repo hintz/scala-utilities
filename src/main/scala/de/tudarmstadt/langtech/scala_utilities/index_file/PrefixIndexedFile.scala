@@ -45,6 +45,9 @@ class PrefixIndexedFile(val path: String, val prefixLength: Int = 5) {
     val string = if(readData) new String(byteArray) else null
     string
   }
+  
+  /** Close this PrefixIndexedFile */
+  def close { file.close }
 
   // lazily loaded index
   protected val index: PrefixFileIndex = {
@@ -148,10 +151,9 @@ class PrefixIndexedFile(val path: String, val prefixLength: Int = 5) {
   }
 }
 
-object Test extends App {
-  //val file = new PrefixIndexedFile("F:/AIPHES_Data/LexSub/coocs/germeval_coocs_truecase.txt")
-  val file = new PrefixIndexedFile("../lexsub-gpl/AIPHES_Data/DT/de70M_mate_lemma/de70M_parsed_lemmatized_LMI_s0.0_w2_f2_wf0_wpfmax1000_wpfmin2_p1000_simsortlimit200_lexsub")
-  file.search("würgen") foreach println
-  file.search("wüten") foreach println
-  file.search("wissend") foreach println
+/*
+object TestPrefixIndexedFile extends App {
+  val file = new PrefixIndexedFile("testfile.txt")
+  file.search("testword") foreach println
 }
+*/

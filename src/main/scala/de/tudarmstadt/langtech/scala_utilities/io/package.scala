@@ -27,7 +27,7 @@ package object io {
     def filenamePart(path: String): String = Paths.get(path).getFileName.toString
     
     /** Returns only the filename part of a given path */
-    def folderPart(path: String): Option[String] = Option(Paths.get(path).getParent.toString)
+    def folderPart(path: String): Option[String] = Option(Paths.get(path).getParent).map(_.toString)
 
     /** More or less a hack. Take raw bytes and try to encode them in default encoding (=UTF-8) */
     def reencode(string: String): String = new String(string.getBytes, FileEncoding)
