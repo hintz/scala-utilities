@@ -16,8 +16,14 @@ class YamlSettings(val settingsFile: String) {
    *      outputfile: "foo"
    */
   def read[Type](keys: String*): Type = {
-    keys.foldLeft(settings)(_.asInstanceOf[java.util.LinkedHashMap[String, Object]].get(_))
+    try {
+      keys.foldLeft(settings)(_.asInstanceOf[java.util.LinkedHashMap[String, Object]].get(_))
       .asInstanceOf[Type]
+    }
+    catch {
+      case e: NullPointerException => 
+        throw new IllegalArgumentException("Settings file %s does not contain keys %s".format(settingsFile, keys.mkString("->")))
+    }
   }
   
   /** reads a string from the settings file, and makes sure that it is a valid path to a file or folder */
