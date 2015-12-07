@@ -89,7 +89,7 @@ class PrefixIndexedFile(val path: String, val prefixLength: Int = 5) {
       if(prefixAtMid.isEmpty){ // we've reached the end of file
         high = low // force an abortion of the search
       }
-      if (prefixAtMid.get < prefix) { // binary search: go to upper half
+      else if (prefixAtMid.get < prefix) { // binary search: go to upper half
         lastLow = low; low = mid + 1
       } else high = mid // binary search: go to lower half
     }
