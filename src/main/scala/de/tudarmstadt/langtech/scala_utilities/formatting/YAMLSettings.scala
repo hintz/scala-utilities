@@ -1,7 +1,5 @@
 package de.tudarmstadt.langtech.scala_utilities.formatting
 
-package de.tudarmstadt.langtech.scala_utilities.formatting;
-
 import org.yaml.snakeyaml.Yaml
 import java.io.FileInputStream
 import java.io.FileNotFoundException

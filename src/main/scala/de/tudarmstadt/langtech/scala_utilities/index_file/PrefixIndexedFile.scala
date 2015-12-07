@@ -72,17 +72,30 @@ class PrefixIndexedFile(val path: String, val prefixLength: Int = 5) {
 
     var (low, high) = (begin, end)
     var lastLow = low
-    def prefixAt(pos: Long): String = {
-      file.seek(pos); readline; readline.take(prefixLength)
+    
+    def prefixAt(pos: Long): Option[String] = {
+      file.seek(pos)
+      readline // read partial line (cut off due to pos in the middle)
+      val fullLine = readline // read the next full line
+      if(fullLine != null)
+        Some(fullLine.take(prefixLength)) 
+      else None
     }
+    
+    // do a binary search for the exact beginning of the prefix
     while (high - low > ByteAccuracy) {
       val mid = (low + high) / 2
-      if (prefixAt(mid) < prefix) {
+      val prefixAtMid = prefixAt(mid)
+      if(prefixAtMid.isEmpty){ // we've reached the end of file
+        high = low // force an abortion of the search
+      }
+      if (prefixAtMid.get < prefix) { // binary search: go to upper half
         lastLow = low; low = mid + 1
-      } else high = mid
+      } else high = mid // binary search: go to lower half
     }
     file.seek(lastLow)
 
+    // create iterator which starts reading from the exact beginning (iterator is lazy and does not yet read)
     val lines = for (
       line <- Iterator.continually(readline)
         .takeWhile(line => line != null && file.getFilePointer <= end)
@@ -98,6 +111,8 @@ class PrefixIndexedFile(val path: String, val prefixLength: Int = 5) {
     println(".. dropped right %d lines".format(dropped.length - taken.length))
     return taken
     */
+    
+    // extract actual subset
     val cleaned = lines.dropWhile(!_.startsWith(prefix)).takeWhile(_.startsWith(prefix))
     cleaned.toList
   }
