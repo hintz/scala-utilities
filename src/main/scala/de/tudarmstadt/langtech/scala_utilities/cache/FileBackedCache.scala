@@ -41,7 +41,6 @@ class FileBackedCache[In <: java.io.Serializable, Out <: java.io.Serializable](f
     outstream.writeObject(in)
     outstream.writeObject(out)
     outstream.flush
-    //println("caching " + in + " -> " + out)
     cache.put(in, out)
   }
   
@@ -67,11 +66,14 @@ class FileBackedCache[In <: java.io.Serializable, Out <: java.io.Serializable](f
       case ListBuffer(Left(k), Right(v)) => cache += ((k, v))
       case _ => throw new RuntimeException("Illegal format in " + filename)
     }
+    System.err.println("Read " + cache.size + " entries from cache " + filename)
   }
   
   def apply(in: In): Out = {
     cache.get(in) match {
-      case Some(cached) => cached
+      case Some(cached) => 
+        //System.err.println("Cache-hit: " + in + " -> " + cached)
+        cached
       case None =>
         val out = f(in)
         writeToCache(in, out)
@@ -80,14 +82,31 @@ class FileBackedCache[In <: java.io.Serializable, Out <: java.io.Serializable](f
   }
   
   def close {
+    //System.err.println("Closing cachefile " + filename)
     outstream.close
+  }
+}
+
+object FileBackedCache {
+  
+  /** Creates a FileBacked cache which is automatically closed on shutdown */
+  def apply[In <: java.io.Serializable, Out <: java.io.Serializable](f: In => Out, filename: String): FileBackedCache[In, Out] = {
+    val caller = Thread.currentThread
+    val cache = new FileBackedCache(f, filename)
+    Runtime.getRuntime.addShutdownHook(new Thread {
+      override def run {
+    	  cache.close
+    	  caller.join
+      }
+    })
+    cache
   }
 }
 
 
 object TestFileBackedCache extends App {
   val square: Integer => Integer = x => x * x
-  val cachedSquare = new FileBackedCache(square, "cache/square.bin")
-  cachedSquare(3)
-  cachedSquare(4)
+  val cachedSquare = FileBackedCache(square, "cache/square.bin")
+  println(cachedSquare(3))
+  println(cachedSquare(4))
 }

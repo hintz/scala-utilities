@@ -6,7 +6,7 @@ import de.tudarmstadt.langtech.scala_utilities.cache.FileBackedCache
 class CachedPrefixIndexedFile(val path: String, val prefixLength: Int = 5) {
   
   val prefixFile = new PrefixIndexedFile(path, prefixLength)
-  val cache = new FileBackedCache(prefixFile.search, path + ".cache")
+  val cache = FileBackedCache(prefixFile.search, path + ".cache")
   
   def search(s: String) = cache(s)
 }
