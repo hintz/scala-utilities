@@ -13,9 +13,13 @@ package object io {
 
     def slurp(path: String): String =
       scala.io.Source.fromFile(path, FileEncoding).getLines.mkString("\n")
+      
+    def mkdirs(file: String){
+      folderPart(file).foreach(parent => new File(parent).mkdirs)
+    }
 
     def write(file: String, data: String) {
-      folderPart(file).foreach(parent => new File(parent).mkdirs)
+      mkdirs(file)
       val stream = new java.io.OutputStreamWriter(new java.io.FileOutputStream(file), FileEncoding)
       stream.write(data)
       stream.close
@@ -34,6 +38,7 @@ package object io {
 
     /** Serialize an object in file*/
     def serialize(o: Any, file: String) {
+      mkdirs(file)
       val s = new java.io.ObjectOutputStream(new java.io.FileOutputStream(file))
       s.writeObject(o)
       s.close
