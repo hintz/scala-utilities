@@ -13,7 +13,7 @@ trait BatchProcessing[In, Out] extends Parallelizable[In, Out] {
   def apply(input: In): Out
   
   def report(i: Int, n: Int, passed: Double, remaining: Double){
-    println("%d / %d items (%.2f%%) %.0fs passed, %.1fs remaining".format(i, n, i * 100f / n, passed, remaining))
+    System.err.println("%d / %d items (%.2f%%) %.0fs passed, %.1fs remaining".format(i, n, i * 100f / n, passed, remaining))
   }
   
   def apply(input: Iterable[In]): Iterable[Out] = input.reporting(report, 5000).map(apply)
