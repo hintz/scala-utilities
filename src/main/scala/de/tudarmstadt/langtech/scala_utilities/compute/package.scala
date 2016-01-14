@@ -2,9 +2,15 @@ package de.tudarmstadt.langtech.scala_utilities
 
 package object compute {
   
-  /** Normalizes a set of positive real numbers */
+  /** Normalizes positive real numbers */
   def normalize[I <: Iterable[Double]](values: I): I = {
     val sum = values.sum
+    if (sum > 0) values.map(v => v / sum).asInstanceOf[I] else values
+  }
+  
+  /** Normalizes real numbers with their absolute sum */
+  def absNormalize[I <: Iterable[Double]](values: I): I = {
+    val sum = values.map(math.abs).sum
     if (sum > 0) values.map(v => v / sum).asInstanceOf[I] else values
   }
 
@@ -12,6 +18,15 @@ package object compute {
   def normalizeValues[A](items: Seq[(A, Double)]): Seq[(A, Double)] = {
     val (it, values) = items.unzip
     it.zip(normalize(values))
+  }
+  
+  /** Min-max normalizes real numbers, shifting all values in the range [0, 1] */
+  def minMaxNormalize[I <: Iterable[Double]](values: I): I = {
+    if(values.isEmpty) return values
+    val minValue = values.min
+    val maxValue = values.max
+    val d = maxValue - minValue
+    values.map(v => (v - minValue) / d).asInstanceOf[I]
   }
 
   /** @return the standard mean of a collection of numbers */
