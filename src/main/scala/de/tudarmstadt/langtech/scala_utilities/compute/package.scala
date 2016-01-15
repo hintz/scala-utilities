@@ -16,6 +16,12 @@ package object compute {
     val sum = values.map(math.abs).sum
     if (sum > 0) values.map(v => v / sum).asInstanceOf[I] else values
   }
+  
+  /** Normalizes real numbers by their absolute maximum value */
+  def maxNormalize[I <: Iterable[Double]](values: I): I = {
+    val absMax = values.map(math.abs).max
+    if (absMax > 0) values.map(v => v / absMax).asInstanceOf[I] else values
+  }
 
   /** Normalizes the value of (item, value) tuples */
   def normalizeValues[A](items: Seq[(A, Double)]): Seq[(A, Double)] = {
