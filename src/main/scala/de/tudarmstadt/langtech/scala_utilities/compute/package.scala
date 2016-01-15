@@ -2,6 +2,9 @@ package de.tudarmstadt.langtech.scala_utilities
 
 package object compute {
   
+  /** Checks if a given double is neither NaN nor infinite, thus finite */
+  def isFinite(d: Double) = !d.isNaN && !d.isInfinite
+  
   /** Normalizes positive real numbers */
   def normalize[I <: Iterable[Double]](values: I): I = {
     val sum = values.sum
