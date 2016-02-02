@@ -15,7 +15,7 @@ import java.nio.ByteBuffer
  * 
  * Internally uses both a lazily generated index as well as fuzzy binary search.
  */
-class PrefixIndexedFile(val path: String, val prefixLength: Int = 5) {
+class PrefixIndexedFile(val path: String, val prefixLength: Int = 5) extends PrefixLookupFile {
 
   // accuracy level (in bytes) for fuzzy binary search to stop
   private val ByteAccuracy = 200 
