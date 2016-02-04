@@ -43,8 +43,12 @@ class FileBackedCache[In <: java.io.Serializable, Out <: java.io.Serializable](f
     outstream.flush
     cache.put(in, out)
   }
+ 
   
   private def readCacheFromFile {
+   
+    def throwIllegalFormat = throw new RuntimeException("Illegal format in " + filename)
+    
     val s = new java.io.ObjectInputStream(new java.io.FileInputStream(filename))
     val result = new ListBuffer[Either[In, Out]]
     var needValue = false
@@ -60,11 +64,11 @@ class FileBackedCache[In <: java.io.Serializable, Out <: java.io.Serializable](f
     }
     finally {
       s.close
-      assert(!needValue)
+      if(needValue) throwIllegalFormat
     }
     result.grouped(2).foreach {
       case ListBuffer(Left(k), Right(v)) => cache += ((k, v))
-      case _ => throw new RuntimeException("Illegal format in " + filename)
+      case _ => throwIllegalFormat
     }
     System.err.println("Read " + cache.size + " entries from cache " + filename)
   }
