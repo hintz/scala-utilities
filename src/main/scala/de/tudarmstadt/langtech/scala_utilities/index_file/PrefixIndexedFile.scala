@@ -15,10 +15,7 @@ import java.nio.ByteBuffer
  * 
  * Internally uses both a lazily generated index as well as fuzzy binary search.
  */
-class PrefixIndexedFile(val path: String, val prefixLength: Int = 5) extends PrefixLookupFile {
-
-  // accuracy level (in bytes) for fuzzy binary search to stop
-  private val ByteAccuracy = 200 
+class PrefixIndexedFile(val path: String, val prefixLength: Int = 5, byteAccuracy: Int = 2000) extends PrefixLookupFile {
 
   // the random access file wrapped by this PrefixIndexFile
   private val file = new RandomAccessFile(path, "r")
@@ -83,16 +80,23 @@ class PrefixIndexedFile(val path: String, val prefixLength: Int = 5) extends Pre
     }
     
     // do a binary search for the exact beginning of the prefix
-    while (high - low > ByteAccuracy) {
+    var delta = 0l // how far we moved the bounds
+    do {
       val mid = (low + high) / 2
       val prefixAtMid = prefixAt(mid)
       if(prefixAtMid.isEmpty){ // we've reached the end of file
-        high = low // force an abortion of the search
+        delta = 0 // force an abortion of the search
       }
-      else if (prefixAtMid.get < prefix) { // binary search: go to upper half
+      else if (prefixAtMid.get < prefix) { 
+        // binary search: go to upper half
         lastLow = low; low = mid + 1
-      } else high = mid // binary search: go to lower half
-    }
+        delta = low - lastLow
+      } else {
+        // binary search: go to lower half
+        delta = high - mid
+        high = mid
+      }
+    } while (delta > byteAccuracy)
     file.seek(lastLow)
 
     // create iterator which starts reading from the exact beginning (iterator is lazy and does not yet read)
