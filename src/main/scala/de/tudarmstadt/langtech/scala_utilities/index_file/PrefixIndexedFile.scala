@@ -80,23 +80,24 @@ class PrefixIndexedFile(val path: String, val prefixLength: Int = 5, byteAccurac
     }
     
     // do a binary search for the exact beginning of the prefix
-    var delta = 0l // how far we moved the bounds
-    do {
+    var fpLastLine = -1l // file pointer after the last read line
+    while (high - low > byteAccuracy) {
       val mid = (low + high) / 2
       val prefixAtMid = prefixAt(mid)
-      if(prefixAtMid.isEmpty){ // we've reached the end of file
-        delta = 0 // force an abortion of the search
+      val fpLine = file.getFilePointer
+      // we've reached the end of file, or we read the same line twice => done
+      if(prefixAtMid.isEmpty || fpLine == fpLastLine){ 
+        high = low // force an abortion of the search
       }
       else if (prefixAtMid.get < prefix) { 
         // binary search: go to upper half
         lastLow = low; low = mid + 1
-        delta = low - lastLow
       } else {
         // binary search: go to lower half
-        delta = high - mid
         high = mid
       }
-    } while (delta > byteAccuracy)
+      fpLastLine = fpLine
+    }
     file.seek(lastLow)
 
     // create iterator which starts reading from the exact beginning (iterator is lazy and does not yet read)
