@@ -154,8 +154,9 @@ class PrefixIndexedFile(val path: String, val prefixLength: Int = 5, byteAccurac
       
       // sanity-check for sorting
       if(lastLineContent != null && lastLineContent > line){
-        System.err.println("WARNING: File %s should be sorted, but appears not: %s > %s (at offset %d)"
-            .format(path, lastLineContent.take(10) + ".."), line.take(10) + "..", lineBegin)
+        System.err.println(
+            "WARNING: File %s should be sorted, but appears not: %s > %s (at offset %d)"
+            .format(path, lastLineContent.take(10) + "..", line.take(10) + "..", lineBegin))
       }
       lastLineContent = line
       
