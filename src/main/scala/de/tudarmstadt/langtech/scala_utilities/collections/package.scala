@@ -104,4 +104,21 @@ package object collections {
     val indices = index - left to index + right
     indices.map(items.lift)
   }
+  
+  /** Creates folds for n-fold crossvalidation. Yields tuples of (heldOutData, restOfData)  */
+  def crossfold[A](items: Seq[A], folds: Int): Iterable[(Seq[A], Seq[A])] = {
+    val heldOutSize = items.size / folds
+    for(i <- 0 to folds) yield {
+      val start = i * heldOutSize; val end = if(i == folds) items.size else start + heldOutSize
+      val heldOut = items.slice(start, end)
+      val rest = items.take(start) ++ items.drop(end)
+      (heldOut, rest)
+    }
+  }
+  
+  /** Creates a held out split on items, based on a percentage split. Yields tpule (heldOutData, restOfData) */
+  def holdOut[A](items: Seq[A], holdOutPercentage: Double): (Seq[A], Seq[A]) = {
+    val heldOutSize = (items.size * holdOutPercentage).toInt
+    items.splitAt(heldOutSize).swap
+  }
 }
