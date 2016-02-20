@@ -63,7 +63,6 @@ class PrefixIndexedFile(val path: String, val prefixLength: Int = 5, byteAccurac
 
   /** Yields all lines in this file starting with the given prefix */
   def search(prefix: String): List[String] = file synchronized {
-    
     val prefixLength = prefix.length
     val (begin, end) = index.search(prefix)
 
@@ -82,6 +81,7 @@ class PrefixIndexedFile(val path: String, val prefixLength: Int = 5, byteAccurac
     // do a binary search for the exact beginning of the prefix
     var fpLastLine = -1l // file pointer after the last read line
     while (high - low > byteAccuracy) {
+      print(".")
       val mid = (low + high) / 2
       val prefixAtMid = prefixAt(mid)
       val fpLine = file.getFilePointer
@@ -98,6 +98,7 @@ class PrefixIndexedFile(val path: String, val prefixLength: Int = 5, byteAccurac
       }
       fpLastLine = fpLine
     }
+    println()
     file.seek(lastLow)
 
     // create iterator which starts reading from the exact beginning (iterator is lazy and does not yet read)
@@ -119,7 +120,9 @@ class PrefixIndexedFile(val path: String, val prefixLength: Int = 5, byteAccurac
     
     // extract actual subset
     val cleaned = lines.dropWhile(!_.startsWith(prefix)).takeWhile(_.startsWith(prefix))
-    cleaned.toList
+    val result = cleaned.toList
+    println(s"$prefix -> ${result.length}")
+    result
   }
 
   /** Same as *search*, but does not use binary search */
