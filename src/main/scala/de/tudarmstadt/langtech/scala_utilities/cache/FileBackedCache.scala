@@ -8,6 +8,8 @@ import scala.collection.mutable.ListBuffer
 import java.util.IllegalFormatException
 import java.io.ObjectOutputStream
 import java.io.OutputStream
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Future, Await}
 
 
 class AppendingObjectOutputStream(out: OutputStream) extends ObjectOutputStream(out) {
@@ -21,8 +23,8 @@ class FileBackedCache[In <: java.io.Serializable, Out <: java.io.Serializable](f
   
   val cache = new HashMap[In, Out]
   
-  
-  val outstream = {
+  implicit val ec = scala.concurrent.ExecutionContext.global
+  val outstreamFuture: Future[ObjectOutputStream] = Future {
     val file = new File(filename)
     if (!file.exists) {
       System.err.println("Cache file " + filename + " does not exist. Starting with empty cache..")
@@ -31,10 +33,12 @@ class FileBackedCache[In <: java.io.Serializable, Out <: java.io.Serializable](f
       new java.io.ObjectOutputStream(new java.io.FileOutputStream(filename, true))
     } 
     else {
+      System.err.println("Started reading cache from  " + filename)
       readCacheFromFile
       new AppendingObjectOutputStream(new java.io.FileOutputStream(filename, true))
     }
   }
+  lazy val outstream = Await.result(outstreamFuture, Duration.Inf)
   
   
   private def writeToCache(in: In, out: Out) {
@@ -74,6 +78,7 @@ class FileBackedCache[In <: java.io.Serializable, Out <: java.io.Serializable](f
   }
   
   def apply(in: In): Out = {
+    outstream // make sure the future was completed!
     cache.get(in) match {
       case Some(cached) => 
         //System.err.println("Cache-hit: " + in + " -> " + cached)
