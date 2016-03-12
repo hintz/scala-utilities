@@ -108,10 +108,13 @@ package object collections {
   /** Creates folds for n-fold crossvalidation. Yields tuples of (heldOutData, restOfData)  */
   def crossfold[A](items: Seq[A], folds: Int): Iterable[(Seq[A], Seq[A])] = {
     val heldOutSize = items.size / folds
-    for(i <- 0 to folds) yield {
-      val start = i * heldOutSize; val end = if(i == folds) items.size else start + heldOutSize
+    for(i <- 0 until folds) yield {
+      val start = i * heldOutSize
+      val end = if(i == folds - 1) items.size else start + heldOutSize // the last fold will 
       val heldOut = items.slice(start, end)
       val rest = items.take(start) ++ items.drop(end)
+      //println(s"held out size = ${heldOut.length}, rest = ${rest.length}")
+      assert(heldOut.length + rest.length == items.length)
       (heldOut, rest)
     }
   }

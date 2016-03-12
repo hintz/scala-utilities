@@ -77,7 +77,10 @@ package object io {
       val data = creator // fixed point
       serialize(data, filecache)
       data
-    } else deserialize(filecache)
+    } else {
+      System.err.println("Loading serialized data from " + filecache)
+      deserialize(filecache)
+    }
   }
 
   /** Exectues a block without printing stdout to console */
