@@ -73,7 +73,7 @@ class FileBackedCache[In <: java.io.Serializable, Out <: java.io.Serializable](f
     System.err.println("Read " + cache.size + " entries from cache " + filename)
   }
   
-  def apply(in: In): Out = {
+  def apply(in: In): Out = this.synchronized {
     cache.get(in) match {
       case Some(cached) => 
         //System.err.println("Cache-hit: " + in + " -> " + cached)
