@@ -1,5 +1,14 @@
 package de.tudarmstadt.langtech.scala_utilities
 package object collections {
+  
+  // example: "fish".when(_.length<5)(_.toUpperCase)
+  implicit class When[A](a: A) {
+    def when(f: A => Boolean)(g: A => A) = if (f(a)) g(a) else a
+  }
+  
+  implicit class InCase[A](a: A) {
+    def inCase[S >: A](b: Boolean)(g: S => A) = if (b) g(a) else a
+  }
 
   def to2Tuple[A](list: List[A]): (A, A) = list match {
     case List(a, b) => (a, b)
